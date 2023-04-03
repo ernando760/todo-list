@@ -5,7 +5,7 @@ class TaskModel {
   final int? id;
   final String title;
   final String description;
-  final bool isSelected;
+  bool isSelected;
   TaskModel({
     this.id,
     required this.title,
@@ -44,6 +44,7 @@ class TaskModel {
       isSelected: map['isSelected'] as bool,
     );
   }
+  set setSelected(bool selected) => isSelected = selected;
 
   String toJson() => json.encode(toMap());
 

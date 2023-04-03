@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_list/src/widgets/home/pages/home_page.dart';
+import 'package:todo_list/src/widgets/tasks/pages/tasks_page.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -8,7 +8,7 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: "todo list",
-      home: HomePage(),
+      home: TasksPage(),
     );
   }
 }
