@@ -33,6 +33,11 @@ class _FormTaskState extends State<FormTask> {
   _createTask() {
     _tasksController.addTask(
         title: _titleController.text, description: _descriptionController.text);
+    Navigator.pop(context);
+  }
+
+  _cancel() {
+    Navigator.pop(context);
   }
 
   @override
@@ -41,6 +46,8 @@ class _FormTaskState extends State<FormTask> {
       child: Form(
           key: _formTaskKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextFormField(
                 decoration: const InputDecoration(
@@ -59,9 +66,13 @@ class _FormTaskState extends State<FormTask> {
                 height: 10,
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ElevatedButton(onPressed: () {}, child: const Text("add")),
-                  ElevatedButton(onPressed: () {}, child: const Text("cancel")),
+                  ElevatedButton(
+                      onPressed: _createTask, child: const Text("add")),
+                  ElevatedButton(
+                      onPressed: _cancel, child: const Text("cancel")),
                 ],
               )
             ],

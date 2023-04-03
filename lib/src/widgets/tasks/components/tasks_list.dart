@@ -23,12 +23,17 @@ class _TasksListState extends State<TasksList> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: _taskController.tasks,
-      builder: (context, value, child) => SizedBox(
+      builder: (context, tasks, child) => SizedBox(
         height: 200,
         child: ListView.builder(
-          itemCount: value.length,
+          itemCount: tasks.length,
           itemBuilder: (context, index) {
-            final task = value[index];
+            final task = tasks[index];
+            if (tasks.isEmpty) {
+              const Center(
+                child: Text("task is empty"),
+              );
+            }
             return ListTile(
               trailing: Checkbox(
                   value: task.isSelected,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/src/widgets/tasks/components/form_task.dart';
 
 import '../components/tasks_list.dart';
 
@@ -10,6 +11,16 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> {
+  Future<void> _showFormTask() async {
+    return showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+        title: Text("add task"),
+        content: FormTask(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +33,7 @@ class _TasksPageState extends State<TasksPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: _showFormTask,
         child: const Icon(Icons.add),
       ),
     );
