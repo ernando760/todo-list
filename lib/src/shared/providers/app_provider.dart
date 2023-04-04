@@ -6,12 +6,11 @@ import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
 class AppProvider {
   static final List<SingleChildWidget> providers = [
-    Provider(
+    Provider<RepositoryInterface>(
       create: (context) => TodoRepository(),
     ),
-    Provider(
-      create: (context) => TasksController(
-          repositoryInterface: context.read<RepositoryInterface>()),
-    )
+    ChangeNotifierProvider(
+        create: (context) => TasksController(
+            repositoryInterface: context.read<RepositoryInterface>()))
   ];
 }

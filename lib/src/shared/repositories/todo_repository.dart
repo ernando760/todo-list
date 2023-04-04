@@ -6,8 +6,8 @@ class TodoRepository extends RepositoryInterface {
   @override
   List<TaskModel> addTask(
       {required String title, required String description}) {
-    final task =
-        TaskModel(id: _tasks.length, title: title, description: description);
+    final task = TaskModel(
+        id: _tasks.length + 1, title: title, description: description);
     _tasks.add(task);
     return _tasks;
   }
