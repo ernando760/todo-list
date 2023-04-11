@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart';
 import 'package:todo_list/src/widgets/tasks/components/form_task.dart';
-import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
 import '../components/tasks_list.dart';
 
@@ -16,12 +13,9 @@ class TasksPage extends StatefulWidget {
 class _TasksPageState extends State<TasksPage> {
   Future<void> _showFormTask() async {
     return showDialog(
-      context: context,
-      builder: (context) => const AlertDialog(
-        title: Text("add task"),
-        content: FormTask(),
-      ),
-    );
+        context: context,
+        builder: (context) =>
+            const AlertDialog(title: Text("Add task"), content: FormTask()));
   }
 
   @override
@@ -30,10 +24,12 @@ class _TasksPageState extends State<TasksPage> {
       appBar: AppBar(
         title: const Text("Tasks"),
       ),
-      body: Column(
-        children: const [
-          TasksList(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: const [
+            TasksList(),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showFormTask,

@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
-class FormTask extends StatefulWidget {
-  const FormTask({super.key});
+import '../controllers/tasks_controller.dart';
 
+class FormUpdateTask extends StatefulWidget {
+  const FormUpdateTask({super.key, required this.id}) : assert(id != 0);
+  final int id;
   @override
-  State<FormTask> createState() => _FormTaskState();
+  State<FormUpdateTask> createState() => _FormUpdateTaskState();
 }
 
-class _FormTaskState extends State<FormTask> {
+class _FormUpdateTaskState extends State<FormUpdateTask> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   late final TasksController _tasksController;
-  late final GlobalKey<FormState> _formTaskKey;
+  late final GlobalKey<FormState> _formUpdateTaskKey;
+
   @override
   void initState() {
-    _formTaskKey = GlobalKey<FormState>();
     _tasksController = context.read<TasksController>();
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
+    _formUpdateTaskKey = GlobalKey<FormState>();
     super.initState();
   }
 
@@ -30,9 +32,9 @@ class _FormTaskState extends State<FormTask> {
     super.dispose();
   }
 
-  _createTask() {
-    if (_formTaskKey.currentState!.validate()) {
-      _tasksController.addTask(
+  _updateTask() {
+    if (_formUpdateTaskKey.currentState!.validate()) {
+      _tasksController.updateTask(widget.id,
           title: _titleController.text,
           description: _descriptionController.text);
       Navigator.pop(context);
@@ -47,7 +49,7 @@ class _FormTaskState extends State<FormTask> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Form(
-          key: _formTaskKey,
+          key: _formUpdateTaskKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,16 +69,15 @@ class _FormTaskState extends State<FormTask> {
                 height: 10,
               ),
               TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                    label: Text("description"), border: OutlineInputBorder()),
-                validator: (description) {
-                  if (description == null || description.isEmpty) {
-                    return "please fill in the description field";
-                  }
-                  return null;
-                },
-              ),
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                      label: Text("description"), border: OutlineInputBorder()),
+                  validator: (description) {
+                    if (description == null || description.isEmpty) {
+                      return "please fill in the description field";
+                    }
+                    return null;
+                  }),
               const SizedBox(
                 height: 10,
               ),
@@ -85,7 +86,7 @@ class _FormTaskState extends State<FormTask> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                      onPressed: _createTask, child: const Text("add")),
+                      onPressed: _updateTask, child: const Text("update")),
                   ElevatedButton(
                       onPressed: _cancel, child: const Text("cancel")),
                 ],

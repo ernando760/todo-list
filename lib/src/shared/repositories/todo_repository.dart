@@ -1,31 +1,39 @@
+// ignore_for_file: avoid_print
+
 import 'package:todo_list/src/shared/model/task_model.dart';
 import 'package:todo_list/src/shared/repositories/repository_interface.dart';
 
 class TodoRepository extends RepositoryInterface {
   final List<TaskModel> _tasks = [];
   @override
-  List<TaskModel> addTask(
-      {required String title, required String description}) {
+  Future<void> addTask(
+      {required String title, required String description}) async {
     final task = TaskModel(
         id: _tasks.length + 1, title: title, description: description);
     _tasks.add(task);
-    return _tasks;
+    print(task);
   }
 
   @override
-  List<TaskModel> removeTask({required int id}) {
+  Future<void> removeTask({required int id}) async {
     _tasks.removeWhere((element) => element.id == id);
-    return _tasks;
   }
 
   @override
-  List<TaskModel> updateTask(int id, {String? title, String? description}) {
+  Future<void> updateTask(int id,
+      {String? title, String? description, bool? selected}) async {
+    final taskId = _tasks.indexWhere((element) => element.id == id);
     final taskUpdated = _tasks
-        .map((element) => element.id == id
-            ? element.copyWith(title: title, description: description)
-            : element)
+        .map((task) => task.id == _tasks[taskId].id
+            ? task.copyWith(
+                id: id,
+                title: title,
+                description: description,
+                isSelected: selected)
+            : task)
         .toList();
-    return taskUpdated;
+
+    _tasks.addAll(taskUpdated);
   }
 
   @override
@@ -35,8 +43,8 @@ class TodoRepository extends RepositoryInterface {
 
   @override
   TaskModel getTask({required int id}) {
-    final id = _tasks.indexWhere((element) => element.id == element.id);
-
-    return _tasks[id];
+    final taskId = _tasks.indexWhere((element) => element.id == id);
+    print("get task: ${_tasks[taskId]}");
+    return _tasks[taskId];
   }
 }

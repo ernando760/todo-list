@@ -22,8 +22,7 @@ void main() {
     when(
       () => todoRepository.addTask(
           title: any(named: "title"), description: any(named: "description")),
-    ).thenAnswer(
-        (invocation) => [TaskModel(title: "teste", description: "testando")]);
+    );
 
     var tasks = todoRepository.addTask(title: "ernando", description: "doido");
     print(tasks);
@@ -73,7 +72,7 @@ void main() {
   test("delete task", () {
     when(
       () => todoRepository.removeTask(id: any(named: "id")),
-    ).thenAnswer((invocation) => []);
+    );
 
     todoRepository.addTask(title: "ernando", description: "doido");
     var tasks = todoRepository.removeTask(id: 1);
@@ -91,8 +90,7 @@ void main() {
       () => todoRepository.updateTask(1,
           title: any(named: "title", that: equals("ernando")),
           description: any(named: "description", that: equals("doido"))),
-    ).thenAnswer((invocation) =>
-        [TaskModel(id: 1, title: "ernando", description: "doido")]);
+    );
 
     var updatedTask =
         todoRepository.updateTask(1, title: "ernando", description: "doido");
