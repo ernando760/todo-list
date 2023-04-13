@@ -2,6 +2,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:todo_list/src/shared/repositories/repository_interface.dart';
 import 'package:todo_list/src/shared/repositories/tasks_repository.dart';
+import 'package:todo_list/src/widgets/home/controllers/home_controller.dart';
 import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
 class AppProvider {
@@ -10,7 +11,10 @@ class AppProvider {
       create: (context) => TasksRepository(),
     ),
     ChangeNotifierProvider(
+      create: (context) => HomeController(),
+    ),
+    ChangeNotifierProvider(
         create: (context) => TasksController(
-            repositoryInterface: context.read<RepositoryInterface>()))
+            repositoryInterface: context.read<RepositoryInterface>())),
   ];
 }

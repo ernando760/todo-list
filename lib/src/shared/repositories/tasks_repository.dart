@@ -76,7 +76,6 @@ class TasksRepository extends RepositoryInterface {
     final tasksChecked = getAllTasksChecked();
 
     final index = tasksChecked.indexWhere((task) => task.id == taskRemove.id);
-    // addTask(title: taskRemove.title, description: taskRemove.description);
     await taskBox.deleteAt(index);
   }
 }

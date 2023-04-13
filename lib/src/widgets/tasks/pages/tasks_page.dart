@@ -9,7 +9,14 @@ import '../components/tasks_list.dart';
 import '../controllers/tasks_controller.dart';
 
 class TasksPage extends StatefulWidget {
-  const TasksPage({super.key});
+  const TasksPage(
+      {super.key,
+      required this.title,
+      required this.indexTasks,
+      this.onTasksSelected});
+  final String title;
+  final int indexTasks;
+  final void Function(int index)? onTasksSelected;
 
   @override
   State<TasksPage> createState() => _TasksPageState();
@@ -57,13 +64,11 @@ class _TasksPageState extends State<TasksPage> {
         builder: (context, child) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text("Tasks"),
+              title: Text(widget.title),
             ),
             body: SingleChildScrollView(
               child: Column(
-                children: [
-                  _tasksListSelected(index: _tasksController.indexSelected)
-                ],
+                children: [_tasksListSelected(index: widget.indexTasks)],
               ),
             ),
             floatingActionButton: FloatingActionButton(
@@ -71,8 +76,8 @@ class _TasksPageState extends State<TasksPage> {
               child: const Icon(Icons.add),
             ),
             bottomNavigationBar: BottomNavigationBar(
-                currentIndex: _tasksController.indexSelected,
-                onTap: _tasksController.onIndexSelected,
+                currentIndex: widget.indexTasks,
+                onTap: widget.onTasksSelected,
                 items: const [
                   BottomNavigationBarItem(
                       icon: Icon(Icons.task), label: "tasks"),
