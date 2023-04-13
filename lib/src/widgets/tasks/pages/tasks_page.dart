@@ -1,7 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_list/src/widgets/tasks/components/form_task.dart';
+import 'package:todo_list/src/widgets/tasks/components/tasks_list_checked.dart';
 
 import '../components/tasks_list.dart';
+import '../controllers/tasks_controller.dart';
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
@@ -11,6 +16,7 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> {
+  late final TasksController _tasksController;
   Future<void> _showFormTask() async {
     return showDialog(
         context: context,
@@ -19,22 +25,61 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   @override
+  void initState() {
+    _tasksController = context.read<TasksController>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("init state");
+      _tasksController.getAllTasks();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    print("dispose");
+    _tasksController.dispose();
+    super.dispose();
+  }
+
+  Widget _tasksListSelected({required int index}) {
+    const widgetTasks = [
+      TasksList(),
+      TasksListChecked(),
+    ];
+
+    return widgetTasks[index];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Tasks"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: const [
-            TasksList(),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showFormTask,
-        child: const Icon(Icons.add),
-      ),
-    );
+    return AnimatedBuilder(
+        animation: _tasksController,
+        builder: (context, child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("Tasks"),
+            ),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _tasksListSelected(index: _tasksController.indexSelected)
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: _showFormTask,
+              child: const Icon(Icons.add),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+                currentIndex: _tasksController.indexSelected,
+                onTap: _tasksController.onIndexSelected,
+                items: const [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.task), label: "tasks"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.done), label: "tasks done"),
+                ]),
+          );
+        });
   }
 }

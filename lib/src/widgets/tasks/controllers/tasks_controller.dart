@@ -5,51 +5,77 @@ import 'package:todo_list/src/shared/model/task_model.dart';
 import 'package:todo_list/src/shared/repositories/repository_interface.dart';
 
 class TasksController extends ChangeNotifier {
-  // TaskModel? task;
-  TaskModel? task;
   late final RepositoryInterface _repositoryInterface;
-  List<TaskModel> tasks = [];
   TasksController({required RepositoryInterface repositoryInterface}) {
     _repositoryInterface = repositoryInterface;
   }
+  TaskModel? task;
+  int indexSelected = 0;
+  List<TaskModel> tasks = [];
+  List<TaskModel> tasksChecked = [];
 
-  addTask({required String title, required String description}) async {
+  void addTask({required String title, required String description}) async {
     await _repositoryInterface.addTask(title: title, description: description);
     tasks = _repositoryInterface.getAllTasks();
     notifyListeners();
   }
 
-  getAllTask() {
+  void getAllTasks() {
     tasks = _repositoryInterface.getAllTasks();
+    tasksChecked = _repositoryInterface.getAllTasksChecked();
     notifyListeners();
   }
 
-  removeTask({required int id}) async {
+  void removeTask({required int id}) async {
     await _repositoryInterface.removeTask(id: id);
-    tasks = _repositoryInterface.getAllTasks();
+    getAllTasks();
     notifyListeners();
   }
 
-  updateTask(int id, {String? title, String? description}) async {
+  void removeTaskChecked({required int id}) async {
+    final task = tasksChecked.firstWhere((element) => element.id == id);
+    await _repositoryInterface.removeTaskChecked(taskRemove: task);
+    getAllTasks();
+    notifyListeners();
+  }
+
+  void updateTask(int id, {String? title, String? description}) async {
     await _repositoryInterface.updateTask(id,
-        title: title, description: description);
-    tasks = _repositoryInterface.getAllTasks();
+        title: title, description: description, selected: task?.isSelected);
+    getAllTasks();
+    getTask(id: id);
     notifyListeners();
   }
 
-  getTask({required int id}) {
+  void getTask({required int id}) {
     task = _repositoryInterface.getTask(id: id);
     notifyListeners();
   }
 
-  isSelected(bool? isSelected, int id) {
-    task = tasks.firstWhere((element) => element.id == id);
-    task?.setSelected = isSelected!;
-    _repositoryInterface.updateTask(id,
-        title: task?.title,
-        description: task?.description,
-        selected: task?.isSelected);
+  void isSelected(bool? isSelected, int id) async {
+    if (isSelected != null) {
+      if (isSelected) {
+        task = tasks.firstWhere((element) => element.id == id);
+        if (task != null) {
+          task?.setSelected = isSelected;
+          await _repositoryInterface.addTaskChecked(task: task!);
+        }
+      } else {
+        task = tasksChecked.firstWhere((element) => element.id == id);
+        if (task != null) {
+          task?.setSelected = isSelected;
+          removeTaskChecked(id: id);
+          addTask(title: task!.title, description: task!.description);
+        }
+      }
+    }
+    getAllTasks();
     print(task);
+    notifyListeners();
+  }
+
+  void onIndexSelected(int index) {
+    indexSelected = index;
     notifyListeners();
   }
 }

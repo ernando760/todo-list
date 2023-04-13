@@ -47,4 +47,22 @@ class TodoRepository extends RepositoryInterface {
     print("get task: ${_tasks[taskId]}");
     return _tasks[taskId];
   }
+
+  @override
+  Future<void> addTaskChecked({required TaskModel task}) {
+    // TODO: implement addTaskChecked
+    throw UnimplementedError();
+  }
+
+  @override
+  List<TaskModel> getAllTasksChecked() {
+    // TODO: implement getAllTasksChecked
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> removeTaskChecked({required TaskModel taskRemove}) {
+    // TODO: implement removeTaskChecked
+    throw UnimplementedError();
+  }
 }

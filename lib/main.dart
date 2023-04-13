@@ -19,6 +19,7 @@ void main() async {
 
   Hive.registerAdapter<TaskModel>(TaskModelAdapter());
   await Hive.openBox<TaskModel>("tasks");
+  await Hive.openBox<TaskModel>("tasks complete");
   runApp(MultiProvider(
     providers: AppProvider.providers,
     child: const AppWidget(),

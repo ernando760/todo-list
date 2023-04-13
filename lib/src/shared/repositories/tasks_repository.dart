@@ -52,4 +52,31 @@ class TasksRepository extends RepositoryInterface {
         id: id, title: title, description: description, isSelected: selected);
     await taskBox.putAt(index, taskUpdated);
   }
+
+  @override
+  Future<void> addTaskChecked({
+    required TaskModel task,
+  }) async {
+    final taskBoxCompleted = Hive.box<TaskModel>("tasks complete");
+    await taskBoxCompleted.add(task);
+    removeTask(id: task.id ?? 0);
+  }
+
+  @override
+  List<TaskModel> getAllTasksChecked() {
+    final taskBox = Hive.box<TaskModel>("tasks complete");
+    var tasks = taskBox.values.map((task) => task).toList();
+    ("tasks:$tasks");
+    return tasks;
+  }
+
+  @override
+  Future<void> removeTaskChecked({required TaskModel taskRemove}) async {
+    final taskBox = Hive.box<TaskModel>("tasks complete");
+    final tasksChecked = getAllTasksChecked();
+
+    final index = tasksChecked.indexWhere((task) => task.id == taskRemove.id);
+    // addTask(title: taskRemove.title, description: taskRemove.description);
+    await taskBox.deleteAt(index);
+  }
 }

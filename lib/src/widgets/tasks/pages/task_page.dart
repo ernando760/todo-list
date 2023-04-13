@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/src/widgets/tasks/components/form_update_task.dart';
@@ -15,13 +17,10 @@ class _TaskPageState extends State<TaskPage> {
   Future<void> _showFormTask() async {
     return await showDialog(
       context: context,
-      builder: (context) => SingleChildScrollView(
-        child: AlertDialog(
-          backgroundColor: Colors.red,
-          title: const Text("Update task"),
-          content: FormUpdateTask(
-            id: widget.id!,
-          ),
+      builder: (context) => AlertDialog(
+        title: const Text("Update task"),
+        content: FormUpdateTask(
+          id: widget.id!,
         ),
       ),
     );
@@ -31,16 +30,11 @@ class _TaskPageState extends State<TaskPage> {
   void initState() {
     _tasksController = Provider.of<TasksController>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("init state");
       _tasksController.getTask(id: widget.id!);
     });
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _tasksController.dispose();
   }
 
   @override
