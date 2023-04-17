@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
+import '../../tasks/components/form_task.dart';
 import '../../tasks/pages/tasks_page.dart';
 import '../controllers/home_controller.dart';
 
@@ -12,44 +14,73 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final PageController pageController;
-  late final HomeController homeController;
+  late final HomeController _homeController;
+  late final TasksController _tasksController;
+
+  Future<void> _showFormTask() async {
+    return showDialog(
+        context: context,
+        builder: (context) =>
+            const AlertDialog(title: Text("Add task"), content: FormTask()));
+  }
+
   @override
   void initState() {
-    homeController = context.read<HomeController>();
-    pageController = PageController(initialPage: homeController.indexSelected);
-
+    _homeController = context.read<HomeController>();
+    _tasksController = context.read<TasksController>();
     super.initState();
   }
 
   @override
   void dispose() {
-    pageController.dispose();
-    homeController.dispose();
+    _homeController.dispose();
+    _tasksController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: homeController,
+        animation: _homeController,
         builder: (context, child) {
-          return PageView(
-            onPageChanged: (index) => homeController.onIndexSelected(index),
-            controller: pageController,
-            children: [
-              TasksPage(
-                title: "tasks",
-                indexTasks: homeController.indexSelected,
-                onTasksSelected: homeController.onIndexSelected,
-              ),
-              TasksPage(
-                title: "tasks done",
-                indexTasks: homeController.indexSelected,
-                onTasksSelected: homeController.onIndexSelected,
-              ),
-            ],
-          );
+          final pageController =
+              PageController(initialPage: _homeController.indexSelected);
+          return AnimatedBuilder(
+              animation: _tasksController,
+              builder: (context, child) {
+                return Scaffold(
+                  body: PageView(
+                    onPageChanged: (index) =>
+                        _homeController.onIndexSelected(index),
+                    controller: pageController,
+                    children: [
+                      TasksPage(title: "tasks", tasks: _tasksController.tasks),
+                      TasksPage(
+                          title: "tasks done",
+                          tasks: _tasksController.tasksChecked),
+                      // TasksCheckedPage()
+                    ],
+                  ),
+                  bottomNavigationBar: BottomNavigationBar(
+                      currentIndex: _homeController.indexSelected,
+                      onTap: (index) {
+                        _homeController.onIndexSelected(index);
+                        pageController.animateToPage(index,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease);
+                      },
+                      items: const [
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.task), label: "tasks"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.done), label: "tasks done"),
+                      ]),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: _showFormTask,
+                    child: const Icon(Icons.add),
+                  ),
+                );
+              });
         });
   }
 }

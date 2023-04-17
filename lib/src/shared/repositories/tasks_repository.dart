@@ -9,9 +9,10 @@ class TasksRepository extends RepositoryInterface {
   @override
   Future<void> addTask(
       {required String title, required String description}) async {
+    final tasks = getAllTasks();
     final taskBox = Hive.box<TaskModel>("tasks");
     await taskBox.add(TaskModel(
-        id: taskBox.length + 1, title: title, description: description));
+        id: tasks.length + 1, title: title, description: description));
   }
 
   @override

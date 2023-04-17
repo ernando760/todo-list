@@ -33,11 +33,13 @@ class _FormUpdateTaskState extends State<FormUpdateTask> {
   }
 
   _updateTask() {
+    const snackBar = SnackBar(content: Text("tasks added"));
     if (_formUpdateTaskKey.currentState!.validate()) {
       _tasksController.updateTask(widget.id,
           title: _titleController.text,
           description: _descriptionController.text);
       Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 

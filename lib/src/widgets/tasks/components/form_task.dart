@@ -31,11 +31,13 @@ class _FormTaskState extends State<FormTask> {
   }
 
   _createTask() {
+    const snackBar = SnackBar(content: Text("tasks added"));
     if (_formTaskKey.currentState!.validate()) {
       _tasksController.addTask(
           title: _titleController.text,
           description: _descriptionController.text);
       Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 

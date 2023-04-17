@@ -14,7 +14,8 @@ class TasksController extends ChangeNotifier {
   List<TaskModel> tasks = [];
   List<TaskModel> tasksChecked = [];
 
-  void addTask({required String title, required String description}) async {
+  Future<void> addTask(
+      {required String title, required String description}) async {
     await _repositoryInterface.addTask(title: title, description: description);
     tasks = _repositoryInterface.getAllTasks();
     notifyListeners();
@@ -26,20 +27,20 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeTask({required int id}) async {
+  Future<void> removeTask({required int id}) async {
     await _repositoryInterface.removeTask(id: id);
     getAllTasks();
     notifyListeners();
   }
 
-  void removeTaskChecked({required int id}) async {
+  Future<void> removeTaskChecked({required int id}) async {
     final task = tasksChecked.firstWhere((element) => element.id == id);
     await _repositoryInterface.removeTaskChecked(taskRemove: task);
     getAllTasks();
     notifyListeners();
   }
 
-  void updateTask(int id, {String? title, String? description}) async {
+  Future<void> updateTask(int id, {String? title, String? description}) async {
     await _repositoryInterface.updateTask(id,
         title: title, description: description, selected: task?.isSelected);
     getAllTasks();
@@ -52,7 +53,7 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void isSelected(bool? isSelected, int id) async {
+  Future<void> isSelected(bool? isSelected, int id) async {
     if (isSelected != null) {
       if (isSelected) {
         task = tasks.firstWhere((element) => element.id == id);
@@ -71,11 +72,6 @@ class TasksController extends ChangeNotifier {
     }
     getAllTasks();
     print(task);
-    notifyListeners();
-  }
-
-  void onIndexSelected(int index) {
-    indexSelected = index;
     notifyListeners();
   }
 }

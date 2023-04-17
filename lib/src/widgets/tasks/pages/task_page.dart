@@ -37,10 +37,14 @@ class _TaskPageState extends State<TaskPage> {
     super.initState();
   }
 
+  // @override
+  // void dispose() {
+  //   _tasksController.dispose();
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
-    // final TasksController tasksController = context.watch<TasksController>();
-    // tasksController.getTask(id: widget.task!.id!);
     return Scaffold(
       appBar: AppBar(
         title: AnimatedBuilder(
