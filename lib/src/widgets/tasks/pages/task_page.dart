@@ -28,20 +28,13 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   void initState() {
+    super.initState();
     _tasksController = Provider.of<TasksController>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("init state");
       _tasksController.getTask(id: widget.id!);
     });
-
-    super.initState();
   }
-
-  // @override
-  // void dispose() {
-  //   _tasksController.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {

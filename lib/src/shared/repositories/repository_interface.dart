@@ -9,5 +9,4 @@ abstract class RepositoryInterface {
       {String? title, String? description, bool? selected});
   List<TaskModel> getAllTasksChecked();
   Future<void> addTaskChecked({required TaskModel task});
-  Future<void> removeTaskChecked({required TaskModel taskRemove});
 }

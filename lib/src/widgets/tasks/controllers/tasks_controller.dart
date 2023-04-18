@@ -33,13 +33,6 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeTaskChecked({required int id}) async {
-    final task = tasksChecked.firstWhere((element) => element.id == id);
-    await _repositoryInterface.removeTaskChecked(taskRemove: task);
-    getAllTasks();
-    notifyListeners();
-  }
-
   Future<void> updateTask(int id, {String? title, String? description}) async {
     await _repositoryInterface.updateTask(id,
         title: title, description: description, selected: task?.isSelected);
@@ -53,19 +46,18 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> isSelected(bool? isSelected, int id) async {
+  void isSelected({required bool? isSelected, required int id}) {
     if (isSelected != null) {
       if (isSelected) {
         task = tasks.firstWhere((element) => element.id == id);
         if (task != null) {
           task?.setSelected = isSelected;
-          await _repositoryInterface.addTaskChecked(task: task!);
+          _repositoryInterface.addTaskChecked(task: task!);
         }
       } else {
         task = tasksChecked.firstWhere((element) => element.id == id);
         if (task != null) {
           task?.setSelected = isSelected;
-          removeTaskChecked(id: id);
           addTask(title: task!.title, description: task!.description);
         }
       }

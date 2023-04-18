@@ -28,6 +28,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     _homeController = context.read<HomeController>();
     _tasksController = context.read<TasksController>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tasksController.getAllTasks();
+    });
+
     super.initState();
   }
 
@@ -54,10 +59,16 @@ class _HomePageState extends State<HomePage> {
                         _homeController.onIndexSelected(index),
                     controller: pageController,
                     children: [
-                      TasksPage(title: "tasks", tasks: _tasksController.tasks),
+                      TasksPage(
+                          title: "tasks",
+                          tasks: _tasksController.tasks,
+                          onDeleteTask: _tasksController.removeTask,
+                          onSelectedTask: _tasksController.isSelected),
                       TasksPage(
                           title: "tasks done",
-                          tasks: _tasksController.tasksChecked),
+                          tasks: _tasksController.tasksChecked,
+                          onDeleteTask: _tasksController.removeTask,
+                          onSelectedTask: _tasksController.isSelected),
                       // TasksCheckedPage()
                     ],
                   ),
