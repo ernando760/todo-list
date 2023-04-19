@@ -1,20 +1,24 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
-import '../../tasks/components/form_task.dart';
-import '../../tasks/pages/tasks_page.dart';
-import '../controllers/home_controller.dart';
+import 'package:todo_list/src/widgets/tasks/pages/task_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+import '../components/form_task.dart';
+import '../components/tasks_list_widget.dart';
+import '../controllers/tasks_controller.dart';
+
+class TasksDashboardPage extends StatefulWidget {
+  const TasksDashboardPage({
+    super.key,
+  });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<TasksDashboardPage> createState() => _TasksDashboardPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  late final HomeController _homeController;
+class _TasksDashboardPageState extends State<TasksDashboardPage> {
   late final TasksController _tasksController;
 
   Future<void> _showFormTask() async {
@@ -24,9 +28,16 @@ class _HomePageState extends State<HomePage> {
             const AlertDialog(title: Text("Add task"), content: FormTask()));
   }
 
+  _navigateToTaskPage({required int id}) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TaskPage(id: id),
+        ));
+  }
+
   @override
   void initState() {
-    _homeController = context.read<HomeController>();
     _tasksController = context.read<TasksController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -38,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _homeController.dispose();
     _tasksController.dispose();
     super.dispose();
   }
@@ -46,36 +56,45 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: _homeController,
+        animation: _tasksController,
         builder: (context, child) {
           final pageController =
-              PageController(initialPage: _homeController.indexSelected);
+              PageController(initialPage: _tasksController.indexSelected);
           return AnimatedBuilder(
               animation: _tasksController,
               builder: (context, child) {
                 return Scaffold(
+                  appBar: AppBar(
+                    title: Text(pageController.initialPage == 0
+                        ? "tasks"
+                        : "tasks done"),
+                  ),
                   body: PageView(
                     onPageChanged: (index) =>
-                        _homeController.onIndexSelected(index),
+                        _tasksController.onIndexSelected(index),
                     controller: pageController,
                     children: [
-                      TasksPage(
-                          title: "tasks",
-                          tasks: _tasksController.tasks,
-                          onDeleteTask: _tasksController.removeTask,
-                          onSelectedTask: _tasksController.isSelected),
-                      TasksPage(
-                          title: "tasks done",
-                          tasks: _tasksController.tasksChecked,
-                          onDeleteTask: _tasksController.removeTask,
-                          onSelectedTask: _tasksController.isSelected),
+                      TasksListWidget(
+                        title: "tasks",
+                        tasks: _tasksController.tasks,
+                        onDeleteTask: _tasksController.removeTask,
+                        onSelectedTask: _tasksController.isSelected,
+                        navigateToTaskPage: _navigateToTaskPage,
+                      ),
+                      TasksListWidget(
+                        title: "tasks done",
+                        tasks: _tasksController.tasksChecked,
+                        onDeleteTask: _tasksController.removeTask,
+                        onSelectedTask: _tasksController.isSelected,
+                        navigateToTaskPage: _navigateToTaskPage,
+                      ),
                       // TasksCheckedPage()
                     ],
                   ),
                   bottomNavigationBar: BottomNavigationBar(
-                      currentIndex: _homeController.indexSelected,
+                      currentIndex: _tasksController.indexSelected,
                       onTap: (index) {
-                        _homeController.onIndexSelected(index);
+                        _tasksController.onIndexSelected(index);
                         pageController.animateToPage(index,
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.ease);

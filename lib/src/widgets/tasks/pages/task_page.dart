@@ -6,7 +6,8 @@ import 'package:todo_list/src/widgets/tasks/components/form_update_task.dart';
 import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
 class TaskPage extends StatefulWidget {
-  const TaskPage({super.key, required this.id}) : assert(id != null);
+  const TaskPage({super.key, required this.id})
+      : assert(id != null, "The id cannot be null");
   final int? id;
   @override
   State<TaskPage> createState() => _TaskPageState();

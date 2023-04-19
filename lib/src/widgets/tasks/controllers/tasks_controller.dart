@@ -14,6 +14,12 @@ class TasksController extends ChangeNotifier {
   List<TaskModel> tasks = [];
   List<TaskModel> tasksChecked = [];
 
+  void onIndexSelected(int index) {
+    indexSelected = index;
+    print("change");
+    notifyListeners();
+  }
+
   Future<void> addTask(
       {required String title, required String description}) async {
     await _repositoryInterface.addTask(title: title, description: description);
@@ -23,7 +29,7 @@ class TasksController extends ChangeNotifier {
 
   void getAllTasks() {
     tasks = _repositoryInterface.getAllTasks();
-    tasksChecked = _repositoryInterface.getAllTasksChecked();
+    tasksChecked = tasks.where((task) => task.isSelected == true).toList();
     notifyListeners();
   }
 
@@ -48,21 +54,33 @@ class TasksController extends ChangeNotifier {
 
   void isSelected({required bool? isSelected, required int id}) {
     if (isSelected != null) {
+      var indexTask = tasks.indexWhere((element) => element.id == id);
       if (isSelected) {
-        task = tasks.firstWhere((element) => element.id == id);
+        task = tasks[indexTask];
+        print("task selected true: $task");
         if (task != null) {
           task?.setSelected = isSelected;
-          _repositoryInterface.addTaskChecked(task: task!);
+          _repositoryInterface.updateTask(id, selected: isSelected);
+          tasks.removeAt(
+            indexTask,
+          );
+          tasksChecked.add(task!);
         }
       } else {
-        task = tasksChecked.firstWhere((element) => element.id == id);
+        indexTask = tasksChecked.indexWhere((element) => element.id == id);
+        task = tasksChecked[indexTask];
+        print("task selected false: $task");
         if (task != null) {
           task?.setSelected = isSelected;
-          addTask(title: task!.title, description: task!.description);
+          _repositoryInterface.updateTask(id, selected: isSelected);
+          tasksChecked.removeAt(
+            indexTask,
+          );
+          tasks.add(task!);
         }
       }
     }
-    getAllTasks();
+    // getAllTasks();
     print(task);
     notifyListeners();
   }

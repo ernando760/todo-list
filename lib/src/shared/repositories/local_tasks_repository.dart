@@ -62,11 +62,11 @@ class LocalTasksRepository extends RepositoryInterface {
 
     var index = _tasks.indexWhere((task) => task.id == id);
     print(index);
-    if (index == -1) {
-      await _updateTaskChecked(id,
-          title: title, description: description, selected: selected);
-      return;
-    }
+    // if (index == -1) {
+    //   await _updateTaskChecked(id,
+    //       title: title, description: description, selected: selected);
+    //   return;
+    // }
     final task = _tasks.firstWhere(
       (task) => task.id == id,
     );
@@ -77,19 +77,19 @@ class LocalTasksRepository extends RepositoryInterface {
 
   //////////// task checked //////////////
 
-  Future<void> _updateTaskChecked(int id,
-      {String? title, String? description, bool? selected = false}) async {
-    final taskBox = Hive.box<TaskModel>("tasks complete");
-    _tasksChecked = getAllTasksChecked();
-    final index = _tasksChecked.indexWhere((task) => task.id == id);
-    print(index);
-    final task = _tasksChecked.firstWhere(
-      (task) => task.id == id,
-    );
-    final taskUpdated = task.copyWith(
-        id: id, title: title, description: description, isSelected: selected);
-    await taskBox.putAt(index, taskUpdated);
-  }
+  // Future<void> _updateTaskChecked(int id,
+  //     {String? title, String? description, bool? selected = false}) async {
+  //   final taskBox = Hive.box<TaskModel>("tasks complete");
+  //   _tasksChecked = getAllTasksChecked();
+  //   final index = _tasksChecked.indexWhere((task) => task.id == id);
+  //   print(index);
+  //   final task = _tasksChecked.firstWhere(
+  //     (task) => task.id == id,
+  //   );
+  //   final taskUpdated = task.copyWith(
+  //       id: id, title: title, description: description, isSelected: selected);
+  //   await taskBox.putAt(index, taskUpdated);
+  // }
 
   @override
   Future<void> addTaskChecked({
@@ -97,7 +97,7 @@ class LocalTasksRepository extends RepositoryInterface {
   }) async {
     final taskBoxCompleted = Hive.box<TaskModel>("tasks complete");
     await taskBoxCompleted.add(task);
-    removeTask(id: task.id ?? 0);
+    await removeTask(id: task.id ?? 0);
   }
 
   @override

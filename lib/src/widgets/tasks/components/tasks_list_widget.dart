@@ -2,9 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/shared/model/task_model.dart';
+import 'package:todo_list/src/widgets/tasks/components/task_list_tile_custom_widget.dart';
 
-class TasksList extends StatelessWidget {
-  const TasksList(
+class TasksListWidget extends StatelessWidget {
+  const TasksListWidget(
       {super.key,
       required this.tasks,
       required this.title,
@@ -32,24 +33,14 @@ class TasksList extends StatelessWidget {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 8.0, bottom: 6.0, top: 8.0),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                          side: const BorderSide(width: 2),
-                          borderRadius: BorderRadius.circular(20)),
-                      tileColor: Colors.white24,
-                      leading: Checkbox(
-                          value: task.isSelected,
-                          onChanged: (isSelected) => onSelectedTask(
-                              isSelected: isSelected, id: task.id!)),
-                      title: Text(task.title),
-                      subtitle: Text(task.description),
-                      onTap: () => navigateToTaskPage(id: task.id!),
-                      onLongPress: () => onDeleteTask(id: task.id!),
-                    ),
-                  );
+                  return TaskListTileCustomWidget(
+                      id: task.id!,
+                      title: task.title,
+                      description: task.description,
+                      selected: task.isSelected,
+                      onChangeSelected: onSelectedTask,
+                      onDelete: onDeleteTask,
+                      navigateTo: navigateToTaskPage);
                 },
               ),
       ),
