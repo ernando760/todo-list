@@ -5,10 +5,10 @@ import 'package:hive/hive.dart';
 
 part "task_model.g.dart";
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 0)
 class TaskModel {
-  @HiveField(0, defaultValue: 1)
-  final int? id;
+  @HiveField(0)
+  final String? id;
   @HiveField(1)
   final String title;
   @HiveField(2)
@@ -23,7 +23,7 @@ class TaskModel {
   });
 
   TaskModel copyWith({
-    int? id,
+    String? id,
     String? title,
     String? description,
     bool? isSelected,
@@ -47,7 +47,7 @@ class TaskModel {
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
-      id: map['id'] as int,
+      id: map['id'] as String,
       title: map['title'] as String,
       description: map['description'] as String,
       isSelected: map['isSelected'] as bool,

@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../controllers/tasks_controller.dart';
 
 class FormUpdateTask extends StatefulWidget {
-  const FormUpdateTask({super.key, required this.id}) : assert(id != 0);
-  final int id;
+  const FormUpdateTask({super.key, required this.id});
+  final String id;
   @override
   State<FormUpdateTask> createState() => _FormUpdateTaskState();
 }

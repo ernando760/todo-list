@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/shared/model/task_model.dart';
-import 'package:todo_list/src/widgets/tasks/components/task_list_tile_custom_widget.dart';
+import 'package:todo_list/src/widgets/tasks/components/task_card_custom_widget.dart';
 
 class TasksListWidget extends StatelessWidget {
   const TasksListWidget(
@@ -14,9 +14,9 @@ class TasksListWidget extends StatelessWidget {
       required this.navigateToTaskPage});
   final String title;
   final List<TaskModel> tasks;
-  final void Function({required int id}) onDeleteTask;
-  final void Function({required int id}) navigateToTaskPage;
-  final void Function({required bool? isSelected, required int id})
+  final void Function({required String id}) onDeleteTask;
+  final void Function({required String id}) navigateToTaskPage;
+  final void Function({required bool? isSelected, required String id})
       onSelectedTask;
   final heightList = 500.0;
 
@@ -33,7 +33,7 @@ class TasksListWidget extends StatelessWidget {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
-                  return TaskListTileCustomWidget(
+                  return TaskCardCustomWidget(
                       id: task.id!,
                       title: task.title,
                       description: task.description,

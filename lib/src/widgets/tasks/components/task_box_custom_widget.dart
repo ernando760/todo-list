@@ -10,12 +10,12 @@ abstract class TaskBoxCustomWidget extends StatelessWidget {
       required this.onChangeSelected,
       required this.onDelete,
       required this.navigateTo});
-  final int id;
+  final String id;
   final String title;
   final String description;
   final bool selected;
-  final void Function({required bool? isSelected, required int id})
+  final void Function({required bool? isSelected, required String id})
       onChangeSelected;
-  final void Function({required int id}) onDelete;
-  final void Function({required int id}) navigateTo;
+  final void Function({required String id}) onDelete;
+  final void Function({required String id}) navigateTo;
 }

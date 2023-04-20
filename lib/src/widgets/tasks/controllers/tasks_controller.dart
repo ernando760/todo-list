@@ -22,24 +22,32 @@ class TasksController extends ChangeNotifier {
 
   Future<void> addTask(
       {required String title, required String description}) async {
+    for (var task in tasks) {
+      if (task.title == title) {
+        print("task already was added");
+        notifyListeners();
+        return;
+      }
+    }
     await _repositoryInterface.addTask(title: title, description: description);
-    tasks = _repositoryInterface.getAllTasks();
+    getAllTasks();
     notifyListeners();
   }
 
   void getAllTasks() {
     tasks = _repositoryInterface.getAllTasks();
-    tasksChecked = tasks.where((task) => task.isSelected == true).toList();
+    tasksChecked = _repositoryInterface.getAllTasksChecked();
     notifyListeners();
   }
 
-  Future<void> removeTask({required int id}) async {
+  Future<void> removeTask({required String id}) async {
     await _repositoryInterface.removeTask(id: id);
     getAllTasks();
     notifyListeners();
   }
 
-  Future<void> updateTask(int id, {String? title, String? description}) async {
+  Future<void> updateTask(String id,
+      {String? title, String? description}) async {
     await _repositoryInterface.updateTask(id,
         title: title, description: description, selected: task?.isSelected);
     getAllTasks();
@@ -47,24 +55,21 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getTask({required int id}) {
+  void getTask({required String id}) {
     task = _repositoryInterface.getTask(id: id);
     notifyListeners();
   }
 
-  void isSelected({required bool? isSelected, required int id}) {
+  void handlerCheckedTask({required bool? isSelected, required String id}) {
     if (isSelected != null) {
       var indexTask = tasks.indexWhere((element) => element.id == id);
       if (isSelected) {
         task = tasks[indexTask];
-        print("task selected true: $task");
         if (task != null) {
           task?.setSelected = isSelected;
-          _repositoryInterface.updateTask(id, selected: isSelected);
-          tasks.removeAt(
-            indexTask,
-          );
-          tasksChecked.add(task!);
+          print("task selected true: $task");
+          _repositoryInterface.removeTask(id: task!.id!);
+          _repositoryInterface.addTaskChecked(task: task!);
         }
       } else {
         indexTask = tasksChecked.indexWhere((element) => element.id == id);
@@ -72,16 +77,15 @@ class TasksController extends ChangeNotifier {
         print("task selected false: $task");
         if (task != null) {
           task?.setSelected = isSelected;
-          _repositoryInterface.updateTask(id, selected: isSelected);
-          tasksChecked.removeAt(
-            indexTask,
+          _repositoryInterface.removeTaskChecked(id: task!.id!);
+          _repositoryInterface.addTask(
+            title: task!.title,
+            description: task!.description,
           );
-          tasks.add(task!);
         }
       }
     }
-    // getAllTasks();
-    print(task);
+    getAllTasks();
     notifyListeners();
   }
 }

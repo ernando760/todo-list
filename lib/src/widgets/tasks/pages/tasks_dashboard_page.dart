@@ -28,7 +28,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
             const AlertDialog(title: Text("Add task"), content: FormTask()));
   }
 
-  _navigateToTaskPage({required int id}) {
+  _navigateToTaskPage({required String id}) {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -78,14 +78,14 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                         title: "tasks",
                         tasks: _tasksController.tasks,
                         onDeleteTask: _tasksController.removeTask,
-                        onSelectedTask: _tasksController.isSelected,
+                        onSelectedTask: _tasksController.handlerCheckedTask,
                         navigateToTaskPage: _navigateToTaskPage,
                       ),
                       TasksListWidget(
                         title: "tasks done",
                         tasks: _tasksController.tasksChecked,
                         onDeleteTask: _tasksController.removeTask,
-                        onSelectedTask: _tasksController.isSelected,
+                        onSelectedTask: _tasksController.handlerCheckedTask,
                         navigateToTaskPage: _navigateToTaskPage,
                       ),
                       // TasksCheckedPage()

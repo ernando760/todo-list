@@ -8,7 +8,7 @@ part of 'task_model.dart';
 
 class TaskModelAdapter extends TypeAdapter<TaskModel> {
   @override
-  final int typeId = 1;
+  final int typeId = 0;
 
   @override
   TaskModel read(BinaryReader reader) {
@@ -17,7 +17,7 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TaskModel(
-      id: fields[0] == null ? 1 : fields[0] as int?,
+      id: fields[0] as String?,
       title: fields[1] as String,
       description: fields[2] as String,
       isSelected: fields[3] as bool,

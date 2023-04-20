@@ -13,9 +13,9 @@ void main() {
     todoRepository = TodoRepositoryMock();
     registerFallbackValue(todoRepository);
     registerFallbackValue(
-        TaskModel(id: 1, title: "teste", description: "testando"));
+        TaskModel(id: "dwdwd", title: "teste", description: "testando"));
     registerFallbackValue(
-        TaskModel(id: 1, title: "ernando", description: "doido"));
+        TaskModel(id: "dwdwd", title: "ernando", description: "doido"));
   });
 
   test("add task", () {
@@ -55,12 +55,12 @@ void main() {
 
   test("get task", () {
     when(
-      () => todoRepository.getTask(id: 1),
+      () => todoRepository.getTask(id: "dwdwd"),
     ).thenAnswer((invocation) =>
-        TaskModel(id: 1, title: "teste", description: "testando"));
+        TaskModel(id: "dwdwd", title: "teste", description: "testando"));
 
     todoRepository.addTask(title: "ernando", description: "doido");
-    var task = todoRepository.getTask(id: 1);
+    var task = todoRepository.getTask(id: "dwdwd");
     print(task);
     expect(task, isA<TaskModel>());
 
@@ -75,7 +75,7 @@ void main() {
     );
 
     todoRepository.addTask(title: "ernando", description: "doido");
-    var tasks = todoRepository.removeTask(id: 1);
+    var tasks = todoRepository.removeTask(id: "dwdwd");
     print(tasks);
     expect(tasks, isEmpty);
     expect(tasks, isA<List<TaskModel>>());
@@ -87,18 +87,18 @@ void main() {
 
   test("updated task", () {
     when(
-      () => todoRepository.updateTask(1,
+      () => todoRepository.updateTask("dwdwd",
           title: any(named: "title", that: equals("ernando")),
           description: any(named: "description", that: equals("doido"))),
     );
 
-    var updatedTask =
-        todoRepository.updateTask(1, title: "ernando", description: "doido");
+    var updatedTask = todoRepository.updateTask("dwdwd",
+        title: "ernando", description: "doido");
 
     print(updatedTask);
     expect(updatedTask, isA<List<TaskModel>>());
     verify(
-      () => todoRepository.updateTask(1,
+      () => todoRepository.updateTask("dwdwd",
           title: any(named: "title", that: equals("ernando")),
           description: any(named: "description", that: equals("doido"))),
     ).called(1);

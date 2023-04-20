@@ -71,7 +71,8 @@ class TaskCardCustomWidget extends TaskBoxCustomWidget {
               ),
               IconButton(
                   onPressed: () => onDelete(id: id),
-                  icon: const Icon(Icons.delete))
+                  icon: Icon(Icons.delete,
+                      color: selected ? Colors.white : Colors.black54))
             ],
           ),
         ),
