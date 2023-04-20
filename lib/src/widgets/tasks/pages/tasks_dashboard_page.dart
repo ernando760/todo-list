@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import 'package:todo_list/src/widgets/tasks/pages/task_page.dart';
 
-import '../components/form_task.dart';
 import '../components/tasks_list_widget.dart';
 import '../controllers/tasks_controller.dart';
 
