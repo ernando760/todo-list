@@ -21,18 +21,20 @@ class TasksDashboardPage extends StatefulWidget {
 class _TasksDashboardPageState extends State<TasksDashboardPage> {
   late final TasksController _tasksController;
 
-  Future<void> _showFormTask() async {
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            const AlertDialog(title: Text("Add task"), content: FormTask()));
+  void _addTask() {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => TaskPage(addTask: _tasksController.addTask),
+    ));
   }
 
-  _navigateToTaskPage({required String id}) {
-    Navigator.push(
+  _updateTask({required String id}) {
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => TaskPage(id: id),
+          builder: (context) => TaskPage(
+            id: id,
+            updateTask: _tasksController.updateTask,
+          ),
         ));
   }
 
@@ -64,32 +66,53 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
               animation: _tasksController,
               builder: (context, child) {
                 return Scaffold(
-                  appBar: AppBar(
-                    title: Text(pageController.initialPage == 0
-                        ? "tasks"
-                        : "tasks done"),
-                  ),
-                  body: PageView(
-                    onPageChanged: (index) =>
-                        _tasksController.onIndexSelected(index),
-                    controller: pageController,
-                    children: [
-                      TasksListWidget(
-                        title: "tasks",
-                        tasks: _tasksController.tasks,
-                        onDeleteTask: _tasksController.removeTask,
-                        onSelectedTask: _tasksController.handlerCheckedTask,
-                        navigateToTaskPage: _navigateToTaskPage,
-                      ),
-                      TasksListWidget(
-                        title: "tasks done",
-                        tasks: _tasksController.tasksChecked,
-                        onDeleteTask: _tasksController.removeTask,
-                        onSelectedTask: _tasksController.handlerCheckedTask,
-                        navigateToTaskPage: _navigateToTaskPage,
-                      ),
-                      // TasksCheckedPage()
-                    ],
+                  body: SafeArea(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(
+                              bottom: 15, top: 15, left: 8.0, right: 8.0),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: const BoxDecoration(),
+                          child: Text(
+                            pageController.initialPage == 0
+                                ? "Tasks"
+                                : "Tasks done",
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 42,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          child: PageView(
+                            onPageChanged: (index) =>
+                                _tasksController.onIndexSelected(index),
+                            controller: pageController,
+                            children: [
+                              TasksListWidget(
+                                title: "tasks",
+                                tasks: _tasksController.tasks,
+                                onDeleteTask: _tasksController.removeTask,
+                                onSelectedTask:
+                                    _tasksController.handlerCheckedTask,
+                                updateTask: _updateTask,
+                              ),
+                              TasksListWidget(
+                                title: "tasks done",
+                                tasks: _tasksController.tasksChecked,
+                                onDeleteTask: _tasksController.removeTask,
+                                onSelectedTask:
+                                    _tasksController.handlerCheckedTask,
+                                updateTask: _updateTask,
+                              ),
+                              // TasksCheckedPage()
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   bottomNavigationBar: BottomNavigationBar(
                       currentIndex: _tasksController.indexSelected,
@@ -106,7 +129,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                             icon: Icon(Icons.done), label: "tasks done"),
                       ]),
                   floatingActionButton: FloatingActionButton(
-                    onPressed: _showFormTask,
+                    onPressed: _addTask,
                     child: const Icon(Icons.add),
                   ),
                 );

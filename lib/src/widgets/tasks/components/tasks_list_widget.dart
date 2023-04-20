@@ -11,11 +11,11 @@ class TasksListWidget extends StatelessWidget {
       required this.title,
       required this.onDeleteTask,
       required this.onSelectedTask,
-      required this.navigateToTaskPage});
+      required this.updateTask});
   final String title;
   final List<TaskModel> tasks;
   final void Function({required String id}) onDeleteTask;
-  final void Function({required String id}) navigateToTaskPage;
+  final void Function({required String id}) updateTask;
   final void Function({required bool? isSelected, required String id})
       onSelectedTask;
   final heightList = 500.0;
@@ -28,7 +28,12 @@ class TasksListWidget extends StatelessWidget {
       child: SizedBox(
         height: heightList,
         child: tasks.isEmpty
-            ? Center(child: Text("$title is empty"))
+            ? Center(
+                child: Text("$title is empty",
+                    style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold)))
             : ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
@@ -40,7 +45,7 @@ class TasksListWidget extends StatelessWidget {
                       selected: task.isSelected,
                       onChangeSelected: onSelectedTask,
                       onDelete: onDeleteTask,
-                      navigateTo: navigateToTaskPage);
+                      navigateTo: updateTask);
                 },
               ),
       ),
