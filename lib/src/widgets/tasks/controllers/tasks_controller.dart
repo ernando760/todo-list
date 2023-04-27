@@ -16,7 +16,6 @@ class TasksController extends ChangeNotifier {
 
   void onIndexSelected(int index) {
     indexSelected = index;
-    print("change");
     notifyListeners();
   }
 

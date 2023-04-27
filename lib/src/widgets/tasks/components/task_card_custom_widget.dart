@@ -21,7 +21,7 @@ class TaskCardCustomWidget extends TaskBoxCustomWidget {
           width: MediaQuery.of(context).size.width,
           height: 100,
           decoration: BoxDecoration(
-            color: selected ? Colors.redAccent : Colors.white,
+            color: selected ? Colors.greenAccent : Colors.white,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(

@@ -20,7 +20,6 @@ class _TaskPageState extends State<TaskPage> {
   late final TasksController _tasksController;
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
-
   void _backToTaskDashboardPage() {
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => const TasksDashboardPage(),
@@ -48,6 +47,8 @@ class _TaskPageState extends State<TaskPage> {
         snackBar = _showSnackBar(
             message: "task added", backgroundColor: Colors.greenAccent);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        _backToTaskDashboardPage();
+        return;
       }
       snackBar = _showSnackBar(
           message: "task cannot be added", backgroundColor: Colors.redAccent);
@@ -61,15 +62,16 @@ class _TaskPageState extends State<TaskPage> {
         snackBar = _showSnackBar(
             message: "task updated", backgroundColor: Colors.greenAccent);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        _backToTaskDashboardPage();
+        return;
       }
       snackBar = _showSnackBar(
           message: "task cannot be updated", backgroundColor: Colors.redAccent);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => const TasksDashboardPage(),
-    ));
+    _titleController.clear();
+    _descriptionController.clear();
   }
 
   _checkingIfTaskExist() {
@@ -94,14 +96,8 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _titleController.dispose();
-    _descriptionController.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final maxLine = MediaQuery.of(context).size.height.toInt();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -121,8 +117,10 @@ class _TaskPageState extends State<TaskPage> {
                     Expanded(
                       child: TextField(
                         controller: _titleController,
-                        decoration:
-                            const InputDecoration(border: InputBorder.none),
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "title",
+                        ),
                         style: const TextStyle(
                             fontSize: 32, fontWeight: FontWeight.bold),
                       ),
@@ -140,7 +138,7 @@ class _TaskPageState extends State<TaskPage> {
                       style: const TextStyle(fontSize: 26),
                       decoration: const InputDecoration(
                           hintText: "description", border: InputBorder.none),
-                      maxLines: MediaQuery.of(context).size.height.toInt(),
+                      maxLines: maxLine,
                     ),
                   ),
                 ),

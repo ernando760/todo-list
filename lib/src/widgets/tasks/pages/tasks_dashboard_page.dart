@@ -21,13 +21,13 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
   late final TasksController _tasksController;
 
   void _addTask() {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
+    Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => TaskPage(addTask: _tasksController.addTask),
     ));
   }
 
   _updateTask({required String id}) {
-    Navigator.pushReplacement(
+    Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => TaskPage(
@@ -74,7 +74,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                           width: MediaQuery.of(context).size.width,
                           decoration: const BoxDecoration(),
                           child: Text(
-                            pageController.initialPage == 0
+                            _tasksController.indexSelected == 0
                                 ? "Tasks"
                                 : "Tasks done",
                             textAlign: TextAlign.left,
@@ -86,8 +86,12 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                         ),
                         Expanded(
                           child: PageView(
-                            onPageChanged: (index) =>
-                                _tasksController.onIndexSelected(index),
+                            onPageChanged: (index) {
+                              _tasksController.onIndexSelected(index);
+                              pageController.animateToPage(index,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            },
                             controller: pageController,
                             children: [
                               TasksListWidget(
