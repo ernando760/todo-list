@@ -50,6 +50,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
 
   @override
   void dispose() {
+    print("dispose");
     _tasksController.dispose();
     super.dispose();
   }
@@ -133,7 +134,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                       ]),
                   floatingActionButton: FloatingActionButton(
                     onPressed: _addTask,
-                    child: const Icon(Icons.add),
+                    child: const Icon(Icons.task_alt),
                   ),
                 );
               });

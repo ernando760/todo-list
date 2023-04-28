@@ -149,7 +149,7 @@ class _TaskPageState extends State<TaskPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _handlerChangeTask,
-        child: const Icon(Icons.update),
+        child: Icon(widget.addTask != null ? Icons.add : Icons.update),
       ),
     );
   }

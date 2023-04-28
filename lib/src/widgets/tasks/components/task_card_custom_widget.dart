@@ -44,7 +44,10 @@ class TaskCardCustomWidget extends TaskBoxCustomWidget {
                 ),
               ),
               Expanded(
+                flex: 1,
                 child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(color: Colors.red),
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
