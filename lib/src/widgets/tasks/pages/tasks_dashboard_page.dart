@@ -42,7 +42,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     _tasksController = context.read<TasksController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _tasksController.getAllTasks();
+      _tasksController.getAllTasksStream();
     });
 
     super.initState();
@@ -60,84 +60,111 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     return AnimatedBuilder(
         animation: _tasksController,
         builder: (context, child) {
+          final tasks = _tasksController.tasksStream.asBroadcastStream();
           final pageController =
               PageController(initialPage: _tasksController.indexSelected);
-          return AnimatedBuilder(
-              animation: _tasksController,
-              builder: (context, child) {
-                return Scaffold(
-                  body: SafeArea(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(
-                              bottom: 15, top: 15, left: 8.0, right: 8.0),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: const BoxDecoration(),
-                          child: Text(
-                            _tasksController.indexSelected == 0
-                                ? "Tasks"
-                                : "Tasks done",
-                            textAlign: TextAlign.left,
-                            style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 42,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Expanded(
-                          child: PageView(
-                            onPageChanged: (index) {
-                              _tasksController.onIndexSelected(index);
-                              pageController.animateToPage(index,
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.ease);
-                            },
-                            controller: pageController,
-                            children: [
-                              TasksListWidget(
-                                title: "tasks",
-                                tasks: _tasksController.tasks,
-                                onDeleteTask: _tasksController.removeTask,
-                                onSelectedTask:
-                                    _tasksController.handlerCheckedTask,
-                                updateTask: _updateTask,
-                              ),
-                              TasksListWidget(
-                                title: "tasks done",
-                                tasks: _tasksController.tasksChecked,
-                                onDeleteTask: _tasksController.removeTask,
-                                onSelectedTask:
-                                    _tasksController.handlerCheckedTask,
-                                updateTask: _updateTask,
-                              ),
-                              // TasksCheckedPage()
-                            ],
-                          ),
-                        ),
-                      ],
+          return Scaffold(
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(
+                        bottom: 15, top: 15, left: 8.0, right: 8.0),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(),
+                    child: Text(
+                      _tasksController.indexSelected == 0
+                          ? "Tasks"
+                          : "Tasks done",
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
-                  bottomNavigationBar: BottomNavigationBar(
-                      currentIndex: _tasksController.indexSelected,
-                      onTap: (index) {
+                  Expanded(
+                    child: PageView(
+                      controller: pageController,
+                      onPageChanged: (index) {
                         _tasksController.onIndexSelected(index);
                         pageController.animateToPage(index,
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.ease);
                       },
-                      items: const [
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.task), label: "tasks"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.done), label: "tasks done"),
-                      ]),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: _addTask,
-                    child: const Icon(Icons.task_alt),
+                      children: [
+                        _tasksController.isLoaded
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : StreamBuilder(
+                                stream: tasks
+                                    .map((event) => event
+                                        .where(
+                                            (task) => task.isSelected == false)
+                                        .toList())
+                                    .distinct(),
+                                builder: (context, snapshot) =>
+                                    !snapshot.hasData
+                                        ? const Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                        : TasksListWidget(
+                                            title: "tasks",
+                                            tasks: snapshot.data ?? [],
+                                            onDeleteTask:
+                                                _tasksController.removeTask,
+                                            onSelectedTask: _tasksController
+                                                .handleSelectedTask,
+                                            updateTask: _updateTask,
+                                          ),
+                              ),
+                        StreamBuilder(
+                          stream: tasks
+                              .map((event) => event
+                                  .where((task) => task.isSelected == true)
+                                  .toList())
+                              .distinct(),
+                          builder: (context, snapshot) => !snapshot.hasData
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : TasksListWidget(
+                                  title: "tasks done",
+                                  tasks: snapshot.data ?? [],
+                                  onDeleteTask: _tasksController.removeTask,
+                                  onSelectedTask:
+                                      _tasksController.handleSelectedTask,
+                                  updateTask: _updateTask,
+                                ),
+                        ),
+
+                        // TasksCheckedPage()
+                      ],
+                    ),
                   ),
-                );
-              });
+                ],
+              ),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+                currentIndex: _tasksController.indexSelected,
+                onTap: (index) {
+                  _tasksController.onIndexSelected(index);
+                  pageController.animateToPage(index,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease);
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.task), label: "tasks"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.done), label: "tasks done"),
+                ]),
+            floatingActionButton: FloatingActionButton(
+              onPressed: _addTask,
+              child: const Icon(Icons.task_alt),
+            ),
+          );
         });
   }
 }

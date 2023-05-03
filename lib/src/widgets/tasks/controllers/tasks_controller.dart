@@ -1,14 +1,20 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/shared/model/task_model.dart';
 import 'package:todo_list/src/shared/repositories/repository_interface.dart';
 
 class TasksController extends ChangeNotifier {
-  late final RepositoryInterface _repositoryInterface;
+  late final RepositoryInterface _repository;
   TasksController({required RepositoryInterface repositoryInterface}) {
-    _repositoryInterface = repositoryInterface;
+    _repository = repositoryInterface;
   }
+
+  Stream<List<TaskModel>> tasksStream = const Stream.empty();
+
+  bool isLoaded = false;
   TaskModel? task;
   int indexSelected = 0;
   List<TaskModel> tasks = [];
@@ -19,72 +25,89 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
+  ///// Getting all tasks on database in real-time///////
+
+  void getAllTasksStream() {
+    tasksStream = _repository.getAllTaskStream();
+    notifyListeners();
+  }
+
+  /// adding task on database ///
+
   Future<void> addTask(
       {required String title, required String description}) async {
+    isLoaded = true;
     for (var task in tasks) {
       if (task.title == title) {
         print("task already was added");
+        isLoaded = false;
         notifyListeners();
         return;
       }
     }
-    await _repositoryInterface.addTask(title: title, description: description);
+    await _repository.addTask(title: title, description: description);
     getAllTasks();
+    isLoaded = false;
     notifyListeners();
   }
 
-  void getAllTasks() {
-    tasks = _repositoryInterface.getAllTasks();
-    tasksChecked = _repositoryInterface.getAllTasksChecked();
+  /// getting all tasks on database ///
+  void getAllTasks() async {
+    isLoaded = true;
+    tasks = await _repository.getAllTasks();
+    isLoaded = false;
     notifyListeners();
   }
+
+  /// rtemove task on database ///
 
   Future<void> removeTask({required String id}) async {
-    await _repositoryInterface.removeTask(id: id);
+    isLoaded = true;
+    await _repository.removeTask(id: id);
     getAllTasks();
+    isLoaded = false;
     notifyListeners();
   }
+
+  /// updating task on database ///
 
   Future<void> updateTask(String id,
-      {String? title, String? description}) async {
-    await _repositoryInterface.updateTask(id,
-        title: title, description: description, selected: task?.isSelected);
+      {String? title, String? description, bool? isSelected}) async {
+    isLoaded = true;
+    await _repository.updateTask(id,
+        title: title, description: description, selected: isSelected);
     getAllTasks();
     getTask(id: id);
+    isLoaded = false;
     notifyListeners();
   }
 
-  void getTask({required String id}) {
-    task = _repositoryInterface.getTask(id: id);
+  /// getting task on database ///
+
+  void getTask({required String id}) async {
+    isLoaded = true;
+    task = await _repository.getTask(id: id);
+    isLoaded = false;
     notifyListeners();
   }
 
-  void handlerCheckedTask({required bool? isSelected, required String id}) {
+  /// handling selected task ///
+
+  void handleSelectedTask(
+      {required bool? isSelected, required String id}) async {
     if (isSelected != null) {
-      var indexTask = tasks.indexWhere((element) => element.id == id);
-      if (isSelected) {
-        task = tasks[indexTask];
-        if (task != null) {
-          task?.setSelected = isSelected;
-          print("task selected true: $task");
-          _repositoryInterface.removeTask(id: task!.id!);
-          _repositoryInterface.addTaskChecked(task: task!);
-        }
-      } else {
-        indexTask = tasksChecked.indexWhere((element) => element.id == id);
-        task = tasksChecked[indexTask];
-        print("task selected false: $task");
-        if (task != null) {
-          task?.setSelected = isSelected;
-          _repositoryInterface.removeTaskChecked(id: task!.id!);
-          _repositoryInterface.addTask(
+      isLoaded = true;
+      task = await _repository.getTask(id: id);
+
+      if (task != null) {
+        task!.isSelected = isSelected;
+        await updateTask(id,
             title: task!.title,
             description: task!.description,
-          );
-        }
+            isSelected: isSelected);
       }
+      isLoaded = false;
+      notifyListeners();
     }
-    getAllTasks();
-    notifyListeners();
   }
 }

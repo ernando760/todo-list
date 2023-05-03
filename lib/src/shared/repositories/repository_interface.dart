@@ -1,13 +1,11 @@
 import 'package:todo_list/src/shared/model/task_model.dart';
 
 abstract class RepositoryInterface {
-  List<TaskModel> getAllTasks();
-  TaskModel getTask({required String id});
-  Future<void> addTask({required String title, required String description});
-  Future<void> removeTask({required String id});
-  Future<void> updateTask(String id,
+  Future<List<TaskModel>> getAllTasks();
+  Future<TaskModel> getTask({required String id});
+  Future<bool?> addTask({required String title, required String description});
+  Future<bool?> removeTask({required String id});
+  Future<bool?> updateTask(String id,
       {String? title, String? description, bool? selected});
-  List<TaskModel> getAllTasksChecked();
-  Future<void> addTaskChecked({required TaskModel task});
-  Future<void> removeTaskChecked({required String id});
+  Stream<List<TaskModel>> getAllTaskStream() => const Stream.empty();
 }

@@ -8,106 +8,88 @@ import 'package:uuid/uuid.dart';
 
 class LocalTasksRepository extends RepositoryInterface {
   List<TaskModel> _tasks = [];
-  List<TaskModel> _tasksChecked = [];
 
   @override
-  List<TaskModel> getAllTasks() {
-    final taskBox = Hive.box<TaskModel>("tasks");
-    _tasks = taskBox.values.map((task) => task).toList();
-    ("tasks:$_tasks");
-    return _tasks;
+  Future<List<TaskModel>> getAllTasks() async {
+    try {
+      final taskBox = Hive.box<TaskModel>("tasks");
+      _tasks = taskBox.values.map((task) => task).toList();
+      ("tasks:$_tasks");
+      return _tasks;
+    } catch (e) {
+      print(" ========== ERROR: 'getAllTasks' ==========");
+      print(e);
+      return [];
+    }
   }
 
   @override
-  Future<void> addTask(
+  Future<bool?> addTask(
       {required String title, required String description}) async {
-    _tasks = getAllTasks();
-    final taskBox = Hive.box<TaskModel>("tasks");
-    const uuid = Uuid();
-    final task =
-        TaskModel(id: uuid.v4(), title: title, description: description);
-    await taskBox.add(task);
-  }
+    try {
+      final taskBox = Hive.box<TaskModel>("tasks");
+      if (title.isNotEmpty || description.isNotEmpty) {
+        const uuid = Uuid();
+        final task =
+            TaskModel(id: uuid.v4(), title: title, description: description);
+        await taskBox.add(task);
+        return true;
+      }
 
-  @override
-  TaskModel getTask({required String id}) {
-    _tasks = getAllTasks();
-
-    var taskIndex = _tasks.indexWhere((task) => task.id == id);
-    if (taskIndex == -1) {
-      _tasksChecked = getAllTasksChecked();
-      taskIndex = _tasksChecked.indexWhere((task) => task.id == id);
-      return _tasksChecked[taskIndex];
+      return false;
+    } catch (e) {
+      print(" ========== ERROR: 'addTask' ==========");
+      print(e);
+      return null;
     }
-
-    return _tasks[taskIndex];
   }
 
   @override
-  Future<void> removeTask({required String id}) async {
-    final taskBox = Hive.box<TaskModel>("tasks");
-    _tasks = getAllTasks();
-
-    final index = _tasks.indexWhere((task) => task.id == id);
-    if (index == -1) {
-      removeTaskChecked(id: id);
-      return;
+  Future<TaskModel> getTask({required String id}) async {
+    _tasks = await getAllTasks();
+    try {
+      var taskIndex = _tasks.indexWhere((task) => task.id == id);
+      return _tasks[taskIndex];
+    } catch (e) {
+      print(" ========== ERROR: 'getTask' ==========");
+      print(e);
+      rethrow;
     }
-
-    await taskBox.deleteAt(index);
   }
 
   @override
-  Future<void> updateTask(String id,
+  Future<bool?> removeTask({required String id}) async {
+    try {
+      final taskBox = Hive.box<TaskModel>("tasks");
+      _tasks = await getAllTasks();
+
+      final index = _tasks.indexWhere((task) => task.id == id);
+      await taskBox.deleteAt(index);
+      return true;
+    } catch (e) {
+      print(" ========== ERROR: 'removeTask' ==========");
+      print(e);
+      return false;
+    }
+  }
+
+  @override
+  Future<bool?> updateTask(String id,
       {String? title, String? description, bool? selected = false}) async {
-    _tasks = getAllTasks();
-    final taskBox = Hive.box<TaskModel>("tasks");
-    var index = _tasks.indexWhere((task) => task.id == id);
-    print(index);
-    if (index == -1) {
-      _updateTaskChecked(id,
-          title: title, description: description, selected: selected);
-      return;
+    try {
+      _tasks = await getAllTasks();
+      final taskBox = Hive.box<TaskModel>("tasks");
+      var index = _tasks.indexWhere((task) => task.id == id);
+      print(index);
+
+      final taskUpdated = _tasks[index].copyWith(
+          id: id, title: title, description: description, isSelected: selected);
+      await taskBox.putAt(index, taskUpdated);
+      return true;
+    } catch (e) {
+      print(" ========== ERROR: 'updateTask' ==========");
+      print(e);
+      return false;
     }
-
-    final taskUpdated = _tasks[index].copyWith(
-        id: id, title: title, description: description, isSelected: selected);
-    await taskBox.putAt(index, taskUpdated);
-  }
-
-  //////////// task checked //////////////
-
-  Future<void> _updateTaskChecked(String id,
-      {String? title, String? description, bool? selected = false}) async {
-    final taskBox = Hive.box<TaskModel>("tasks complete");
-    _tasksChecked = getAllTasksChecked();
-    final index = _tasksChecked.indexWhere((task) => task.id == id);
-    final taskUpdated = _tasksChecked[index].copyWith(
-        id: id, title: title, description: description, isSelected: selected);
-    await taskBox.putAt(index, taskUpdated);
-  }
-
-  @override
-  Future<void> addTaskChecked({
-    required TaskModel task,
-  }) async {
-    final taskBoxCompleted = Hive.box<TaskModel>("tasks complete");
-    await taskBoxCompleted.add(task);
-  }
-
-  @override
-  List<TaskModel> getAllTasksChecked() {
-    final taskBox = Hive.box<TaskModel>("tasks complete");
-    _tasksChecked = taskBox.values.map((task) => task).toList();
-    return _tasksChecked;
-  }
-
-  @override
-  Future<void> removeTaskChecked({required String id}) async {
-    final taskBox = Hive.box<TaskModel>("tasks complete");
-    _tasksChecked = getAllTasksChecked();
-
-    final index = _tasksChecked.indexWhere((task) => task.id == id);
-    await taskBox.deleteAt(index);
   }
 }

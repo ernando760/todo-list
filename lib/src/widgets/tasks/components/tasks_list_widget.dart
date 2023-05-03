@@ -22,6 +22,7 @@ class TasksListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("init $title");
     return Padding(
       padding:
           const EdgeInsets.only(bottom: 10, top: 8.0, left: 8.0, right: 8.0),
@@ -38,6 +39,7 @@ class TasksListWidget extends StatelessWidget {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
+
                   return TaskCardCustomWidget(
                       id: task.id!,
                       title: task.title,
