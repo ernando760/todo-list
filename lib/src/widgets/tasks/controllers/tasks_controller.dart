@@ -18,7 +18,6 @@ class TasksController extends ChangeNotifier {
   TaskModel? task;
   int indexSelected = 0;
   List<TaskModel> tasks = [];
-  List<TaskModel> tasksChecked = [];
 
   void onIndexSelected(int index) {
     indexSelected = index;

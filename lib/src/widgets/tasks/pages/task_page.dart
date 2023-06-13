@@ -97,7 +97,7 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    final maxLine = MediaQuery.of(context).size.height.toInt();
+    final maxLine = MediaQuery.sizeOf(context).height.toInt();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
