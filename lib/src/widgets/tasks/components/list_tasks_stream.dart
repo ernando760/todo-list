@@ -2,42 +2,34 @@
 import 'package:flutter/material.dart';
 
 import 'package:todo_list/src/widgets/tasks/components/tasks_list_widget.dart';
-import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
 
 import '../../../shared/model/task_model.dart';
-import '../pages/task_page.dart';
 
 class ListTasksStream extends StatefulWidget {
   const ListTasksStream({
     Key? key,
-    required this.tasksController,
+    required this.tasksStream,
     required this.isSelected,
+    required this.updateTask,
+    required this.onSelectedTask,
+    required this.onRemoveTask,
   }) : super(key: key);
-  final TasksController tasksController;
+  final Stream<List<TaskModel>> tasksStream;
   final bool isSelected;
+  final void Function({required String id}) updateTask;
+  final void Function({required String id, required bool? isSelected})
+      onSelectedTask;
+  final void Function({required String id}) onRemoveTask;
 
   @override
   State<ListTasksStream> createState() => _ListTasksStreamState();
 }
 
 class _ListTasksStreamState extends State<ListTasksStream> {
-  _updateTask({required String id}) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TaskPage(
-            id: id,
-            updateTask: widget.tasksController.updateTask,
-          ),
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
-    final Stream<List<TaskModel>> tasksStream =
-        widget.tasksController.tasksStream.asBroadcastStream();
     return StreamBuilder(
-      stream: tasksStream
+      stream: widget.tasksStream
           .map((event) => event
               .where((task) => task.isSelected == widget.isSelected)
               .toList())
@@ -49,9 +41,9 @@ class _ListTasksStreamState extends State<ListTasksStream> {
           : TasksListWidget(
               title: "tasks",
               tasks: snapshot.data ?? [],
-              onDeleteTask: widget.tasksController.removeTask,
-              onSelectedTask: widget.tasksController.handleSelectedTask,
-              updateTask: _updateTask,
+              onDeleteTask: widget.onRemoveTask,
+              onSelectedTask: widget.onSelectedTask,
+              updateTask: widget.updateTask,
             ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:todo_list/src/widgets/tasks/components/list_tasks_stream.dart';
 
 import 'package:todo_list/src/widgets/tasks/pages/task_page.dart';
 
+import '../../../shared/model/task_model.dart';
 import '../controllers/tasks_controller.dart';
 
 class TasksDashboardPage extends StatefulWidget {
@@ -26,6 +27,18 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     ));
   }
 
+  _updateTask({required String id}) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TaskPage(
+            id: id,
+            updateTask: _tasksController.updateTask,
+          ),
+        ));
+  }
+
+  late final Stream<List<TaskModel>> tasksStream;
   @override
   void initState() {
     super.initState();
@@ -33,6 +46,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _tasksController.getAllTasksStream();
+      tasksStream = _tasksController.tasksStream;
     });
   }
 
@@ -48,6 +62,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     return AnimatedBuilder(
         animation: _tasksController,
         builder: (context, child) {
+          // final tasksStream = _tasksController.tasksStream.asBroadcastStream();
           final pageController =
               PageController(initialPage: _tasksController.indexSelected);
           return Scaffold(
@@ -85,11 +100,25 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                                 child: CircularProgressIndicator(),
                               )
                             : ListTasksStream(
-                                tasksController: _tasksController,
-                                isSelected: false),
-                        ListTasksStream(
-                            tasksController: _tasksController,
-                            isSelected: true),
+                                tasksStream: tasksStream,
+                                isSelected: false,
+                                onRemoveTask: _tasksController.removeTask,
+                                updateTask: _updateTask,
+                                onSelectedTask:
+                                    _tasksController.handleSelectedTask,
+                              ),
+                        _tasksController.isLoaded
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ListTasksStream(
+                                tasksStream: const Stream.empty(),
+                                isSelected: true,
+                                onRemoveTask: _tasksController.removeTask,
+                                updateTask: _updateTask,
+                                onSelectedTask:
+                                    _tasksController.handleSelectedTask,
+                              ),
                         // TasksCheckedPage()
                       ],
                     ),
