@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print, library_prefixes, constant_identifier_names
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart' as provider;
@@ -28,9 +30,9 @@ Future<void> initHive({bool enableTaskBox = false}) async {
 Future<void> initSupabase() async {
   const PROJECT_URL = String.fromEnvironment("PROJECT_URL");
   const ANON_KEY = String.fromEnvironment("ANON_KEY");
-  print("init supabase");
-  print("url:$PROJECT_URL");
-  print("key:$ANON_KEY");
+  log("init supabase");
+  log("url:$PROJECT_URL");
+  log("key:$ANON_KEY");
   await Supabase.initialize(url: PROJECT_URL, anonKey: ANON_KEY);
 }
 

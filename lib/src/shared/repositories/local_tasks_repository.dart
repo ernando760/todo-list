@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
 
+import 'dart:developer';
+
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list/src/shared/model/task_model.dart';
@@ -16,9 +18,10 @@ class LocalTasksRepository extends RepositoryInterface {
       _tasks = taskBox.values.map((task) => task).toList();
       ("tasks:$_tasks");
       return _tasks;
-    } catch (e) {
-      print(" ========== ERROR: 'getAllTasks' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'getAllTasks' ==========",
+          error: e, stackTrace: s);
+
       return [];
     }
   }
@@ -37,9 +40,9 @@ class LocalTasksRepository extends RepositoryInterface {
       }
 
       return false;
-    } catch (e) {
-      print(" ========== ERROR: 'addTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'addTask' ==========", error: e, stackTrace: s);
+
       return null;
     }
   }
@@ -50,9 +53,9 @@ class LocalTasksRepository extends RepositoryInterface {
     try {
       var taskIndex = _tasks.indexWhere((task) => task.id == id);
       return _tasks[taskIndex];
-    } catch (e) {
-      print(" ========== ERROR: 'getTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'getTask' ==========", error: e, stackTrace: s);
+
       rethrow;
     }
   }
@@ -66,9 +69,10 @@ class LocalTasksRepository extends RepositoryInterface {
       final index = _tasks.indexWhere((task) => task.id == id);
       await taskBox.deleteAt(index);
       return true;
-    } catch (e) {
-      print(" ========== ERROR: 'removeTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'removeTask' ==========",
+          error: e, stackTrace: s);
+
       return false;
     }
   }
@@ -86,9 +90,10 @@ class LocalTasksRepository extends RepositoryInterface {
           id: id, title: title, description: description, isSelected: selected);
       await taskBox.putAt(index, taskUpdated);
       return true;
-    } catch (e) {
-      print(" ========== ERROR: 'updateTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'updateTask' ==========",
+          error: e, stackTrace: s);
+
       return false;
     }
   }

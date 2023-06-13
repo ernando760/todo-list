@@ -6,7 +6,6 @@ import 'package:todo_list/src/widgets/tasks/components/list_tasks_stream.dart';
 
 import 'package:todo_list/src/widgets/tasks/pages/task_page.dart';
 
-import '../../../shared/model/task_model.dart';
 import '../controllers/tasks_controller.dart';
 
 class TasksDashboardPage extends StatefulWidget {
@@ -27,7 +26,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     ));
   }
 
-  _updateTask({required String id}) {
+  void _updateTask({required String id}) {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -38,7 +37,6 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
         ));
   }
 
-  late final Stream<List<TaskModel>> tasksStream;
   @override
   void initState() {
     super.initState();
@@ -46,7 +44,6 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _tasksController.getAllTasksStream();
-      tasksStream = _tasksController.tasksStream;
     });
   }
 
@@ -62,7 +59,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     return AnimatedBuilder(
         animation: _tasksController,
         builder: (context, child) {
-          // final tasksStream = _tasksController.tasksStream.asBroadcastStream();
+          final tasksStream = _tasksController.tasksStream.asBroadcastStream();
           final pageController =
               PageController(initialPage: _tasksController.indexSelected);
           return Scaffold(
@@ -93,6 +90,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                         pageController.animateToPage(index,
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.ease);
+                        _tasksController.getAllTasksStream();
                       },
                       children: [
                         _tasksController.isLoaded
@@ -107,18 +105,13 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                                 onSelectedTask:
                                     _tasksController.handleSelectedTask,
                               ),
-                        _tasksController.isLoaded
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : ListTasksStream(
-                                tasksStream: const Stream.empty(),
-                                isSelected: true,
-                                onRemoveTask: _tasksController.removeTask,
-                                updateTask: _updateTask,
-                                onSelectedTask:
-                                    _tasksController.handleSelectedTask,
-                              ),
+                        ListTasksStream(
+                          tasksStream: tasksStream,
+                          isSelected: true,
+                          onRemoveTask: _tasksController.removeTask,
+                          updateTask: _updateTask,
+                          onSelectedTask: _tasksController.handleSelectedTask,
+                        ),
                         // TasksCheckedPage()
                       ],
                     ),

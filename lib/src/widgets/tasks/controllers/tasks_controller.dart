@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/shared/model/task_model.dart';
@@ -27,7 +28,7 @@ class TasksController extends ChangeNotifier {
   ///// Getting all tasks on database in real-time///////
 
   void getAllTasksStream() {
-    tasksStream = _repository.getAllTaskStream();
+    tasksStream = _repository.getAllTaskStream().asBroadcastStream();
     notifyListeners();
   }
 
@@ -38,7 +39,7 @@ class TasksController extends ChangeNotifier {
     isLoaded = true;
     for (var task in tasks) {
       if (task.title == title) {
-        print("task already was added");
+        log("task already was added");
         isLoaded = false;
         notifyListeners();
         return;
@@ -51,7 +52,7 @@ class TasksController extends ChangeNotifier {
   }
 
   /// getting all tasks on database ///
-  void getAllTasks() async {
+  Future<void> getAllTasks() async {
     isLoaded = true;
     tasks = await _repository.getAllTasks();
     isLoaded = false;
@@ -72,18 +73,24 @@ class TasksController extends ChangeNotifier {
 
   Future<void> updateTask(String id,
       {String? title, String? description, bool? isSelected}) async {
+    late final TaskModel task;
+    if (isSelected == null) {
+      task = await _repository.getTask(id: id);
+    }
     isLoaded = true;
     await _repository.updateTask(id,
-        title: title, description: description, selected: isSelected);
-    getAllTasks();
-    getTask(id: id);
+        title: title,
+        description: description,
+        selected: isSelected ?? task.isSelected);
+    await getAllTasks();
+    await getTask(id: id);
     isLoaded = false;
     notifyListeners();
   }
 
   /// getting task on database ///
 
-  void getTask({required String id}) async {
+  Future<void> getTask({required String id}) async {
     isLoaded = true;
     task = await _repository.getTask(id: id);
     isLoaded = false;

@@ -18,7 +18,7 @@ class TaskCardCustomWidget extends TaskBoxCustomWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         child: Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery.sizeOf(context).width,
           height: 100,
           decoration: BoxDecoration(
             color: selected ? Colors.greenAccent : Colors.white,

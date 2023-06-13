@@ -5,7 +5,7 @@ import 'package:todo_list/src/widgets/tasks/components/tasks_list_widget.dart';
 
 import '../../../shared/model/task_model.dart';
 
-class ListTasksStream extends StatefulWidget {
+class ListTasksStream extends StatelessWidget {
   const ListTasksStream({
     Key? key,
     required this.tasksStream,
@@ -22,17 +22,11 @@ class ListTasksStream extends StatefulWidget {
   final void Function({required String id}) onRemoveTask;
 
   @override
-  State<ListTasksStream> createState() => _ListTasksStreamState();
-}
-
-class _ListTasksStreamState extends State<ListTasksStream> {
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: widget.tasksStream
-          .map((event) => event
-              .where((task) => task.isSelected == widget.isSelected)
-              .toList())
+      stream: tasksStream
+          .map((event) =>
+              event.where((task) => task.isSelected == isSelected).toList())
           .distinct(),
       builder: (context, snapshot) => !snapshot.hasData
           ? const Center(
@@ -41,9 +35,9 @@ class _ListTasksStreamState extends State<ListTasksStream> {
           : TasksListWidget(
               title: "tasks",
               tasks: snapshot.data ?? [],
-              onDeleteTask: widget.onRemoveTask,
-              onSelectedTask: widget.onSelectedTask,
-              updateTask: widget.updateTask,
+              onDeleteTask: onRemoveTask,
+              onSelectedTask: onSelectedTask,
+              updateTask: updateTask,
             ),
     );
   }

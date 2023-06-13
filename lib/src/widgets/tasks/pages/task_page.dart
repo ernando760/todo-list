@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/src/widgets/tasks/controllers/tasks_controller.dart';
@@ -74,12 +76,11 @@ class _TaskPageState extends State<TaskPage> {
     _descriptionController.clear();
   }
 
-  _checkingIfTaskExist() {
+  void _checkingIfTaskExist() async {
     if (widget.id != null) {
-      _tasksController.getTask(id: widget.id!);
+      await _tasksController.getTask(id: widget.id!);
       _titleController.text = _tasksController.task!.title;
       _descriptionController.text = _tasksController.task!.description;
-      return;
     }
   }
 
@@ -89,10 +90,8 @@ class _TaskPageState extends State<TaskPage> {
     _tasksController = Provider.of<TasksController>(context, listen: false);
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("init state");
-      _checkingIfTaskExist();
-    });
+    log("init state", name: 'init state of task page');
+    Future(() => _checkingIfTaskExist());
   }
 
   @override

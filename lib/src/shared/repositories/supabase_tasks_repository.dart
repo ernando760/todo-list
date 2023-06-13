@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print, unnecessary_null_comparison
 
+import 'dart:developer';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo_list/src/shared/model/task_model.dart';
 import 'package:todo_list/src/shared/repositories/repository_interface.dart';
@@ -17,9 +19,10 @@ class SupabaseTasksRepository extends RepositoryInterface {
       final tasksStream = supabaseStreamBuilder
           .asyncMap((event) => event.map((e) => TaskModel.fromMap(e)).toList());
       yield* tasksStream;
-    } catch (e) {
-      print(" ========== ERROR: 'getAllTaskStream' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'getAllTaskStream' ==========",
+          name: "ERROR", error: e, stackTrace: s);
+
       yield* const Stream.empty();
     }
   }
@@ -32,9 +35,10 @@ class SupabaseTasksRepository extends RepositoryInterface {
       await _supabaseClient.from("tasks").insert(
           {"title": title, "description": description, "isSelected": false});
       return true;
-    } catch (e) {
-      print(" ========== ERROR: 'addTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'addTask' ==========",
+          name: "ERROR", error: e, stackTrace: s);
+
       return null;
     }
   }
@@ -45,12 +49,13 @@ class SupabaseTasksRepository extends RepositoryInterface {
     try {
       final List<Map<String, dynamic>> res =
           await _supabaseClient.from("tasks").select();
-      print(res);
+      log("$res", name: "all tasks");
       _tasks = res.map((e) => TaskModel.fromMap(e)).toList();
       return _tasks;
-    } catch (e) {
-      print(" ========== ERROR: 'getAllTasks' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'getAllTasks' ==========",
+          name: "ERROR", error: e, stackTrace: s);
+
       return [];
     }
   }
@@ -69,9 +74,10 @@ class SupabaseTasksRepository extends RepositoryInterface {
       // var indexTask = _tasks.indexWhere((element) => element.id == id);
       var task = TaskModel.fromMap(taskMap);
       return task;
-    } catch (e) {
-      print(" ========== ERROR: 'getTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'getTask' ==========",
+          name: "ERROR", error: e, stackTrace: s);
+
       rethrow;
     }
   }
@@ -83,9 +89,10 @@ class SupabaseTasksRepository extends RepositoryInterface {
       await _supabaseClient.from("tasks").delete().eq("id", id);
 
       return true;
-    } catch (e) {
-      print(" ========== ERROR: 'removeTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'removeTask' ==========",
+          name: "ERROR", error: e, stackTrace: s);
+
       return false;
     }
   }
@@ -101,9 +108,10 @@ class SupabaseTasksRepository extends RepositoryInterface {
         'isSelected': selected
       }).eq("id", id);
       return true;
-    } catch (e) {
-      print(" ========== ERROR: 'updateTask' ==========");
-      print(e);
+    } catch (e, s) {
+      log(" ========== ERROR: 'updateTask' ==========",
+          name: "ERROR", error: e, stackTrace: s);
+
       return false;
     }
   }
