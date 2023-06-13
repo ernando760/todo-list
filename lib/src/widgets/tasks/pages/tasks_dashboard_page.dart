@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_list/src/widgets/tasks/components/list_tasks_stream.dart';
 
 import 'package:todo_list/src/widgets/tasks/pages/task_page.dart';
 
-import '../components/tasks_list_widget.dart';
 import '../controllers/tasks_controller.dart';
 
 class TasksDashboardPage extends StatefulWidget {
@@ -26,26 +26,14 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     ));
   }
 
-  _updateTask({required String id}) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TaskPage(
-            id: id,
-            updateTask: _tasksController.updateTask,
-          ),
-        ));
-  }
-
   @override
   void initState() {
+    super.initState();
     _tasksController = context.read<TasksController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _tasksController.getAllTasksStream();
     });
-
-    super.initState();
   }
 
   @override
@@ -60,7 +48,6 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
     return AnimatedBuilder(
         animation: _tasksController,
         builder: (context, child) {
-          final tasks = _tasksController.tasksStream.asBroadcastStream();
           final pageController =
               PageController(initialPage: _tasksController.indexSelected);
           return Scaffold(
@@ -70,7 +57,7 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                   Container(
                     padding: const EdgeInsets.only(
                         bottom: 15, top: 15, left: 8.0, right: 8.0),
-                    width: MediaQuery.of(context).size.width,
+                    width: MediaQuery.sizeOf(context).width,
                     decoration: const BoxDecoration(),
                     child: Text(
                       _tasksController.indexSelected == 0
@@ -97,48 +84,12 @@ class _TasksDashboardPageState extends State<TasksDashboardPage> {
                             ? const Center(
                                 child: CircularProgressIndicator(),
                               )
-                            : StreamBuilder(
-                                stream: tasks
-                                    .map((event) => event
-                                        .where(
-                                            (task) => task.isSelected == false)
-                                        .toList())
-                                    .distinct(),
-                                builder: (context, snapshot) =>
-                                    !snapshot.hasData
-                                        ? const Center(
-                                            child: CircularProgressIndicator(),
-                                          )
-                                        : TasksListWidget(
-                                            title: "tasks",
-                                            tasks: snapshot.data ?? [],
-                                            onDeleteTask:
-                                                _tasksController.removeTask,
-                                            onSelectedTask: _tasksController
-                                                .handleSelectedTask,
-                                            updateTask: _updateTask,
-                                          ),
-                              ),
-                        StreamBuilder(
-                          stream: tasks
-                              .map((event) => event
-                                  .where((task) => task.isSelected == true)
-                                  .toList())
-                              .distinct(),
-                          builder: (context, snapshot) => !snapshot.hasData
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                              : TasksListWidget(
-                                  title: "tasks done",
-                                  tasks: snapshot.data ?? [],
-                                  onDeleteTask: _tasksController.removeTask,
-                                  onSelectedTask:
-                                      _tasksController.handleSelectedTask,
-                                  updateTask: _updateTask,
-                                ),
-                        ),
-
+                            : ListTasksStream(
+                                tasksController: _tasksController,
+                                isSelected: false),
+                        ListTasksStream(
+                            tasksController: _tasksController,
+                            isSelected: true),
                         // TasksCheckedPage()
                       ],
                     ),
